@@ -15,8 +15,8 @@ plt.ion()   # interactive mode
 
 # Data augmentation and normalization for training
 # Just normalization for validation
-mean = [0.5071, 0.4867, 0.4408]
-stdv = [0.2675, 0.2565, 0.2761]
+mean = [0.485, 0.456, 0.406]
+stdv = [0.229, 0.224, 0.225]
 data_transforms = {
     'train': transforms.Compose([
         transforms.RandomResizedCrop(224),
@@ -33,11 +33,11 @@ data_transforms = {
 }
 
 
-data_dir = '/Users/peipengfei/Downloads/hymenoptera_data'
+data_dir = '/Users/peipengfei/Downloads/data'
 image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
                                           data_transforms[x])
                   for x in ['train', 'val']}
-dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=8,
+dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=64,
                                               shuffle=True, num_workers=4)
                for x in ['train', 'val']}
 dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
@@ -54,8 +54,8 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 def imshow(inp, title=None):
     """Imshow for Tensor."""
     inp = inp.numpy().transpose((1, 2, 0))
-    mean = np.array([0.5071, 0.4867, 0.4408])
-    std = np.array([0.2675, 0.2565, 0.2761])
+    mean = np.array([0.485, 0.456, 0.406])
+    std = np.array([0.229, 0.224, 0.225])
     inp = std * inp + mean
     inp = np.clip(inp, 0, 1)
     plt.imshow(inp)
@@ -220,7 +220,7 @@ optimizer_ft = optim.SGD(model_ft.parameters(), lr=0.001, momentum=0.9)
 exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
 
 model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
-                       num_epochs=25)
+                       num_epochs=300)
 
 visualize_model(model_ft)
 torch.save(model_ft, '/Users/peipengfei/Downloads/data/test.pkl')
