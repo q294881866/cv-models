@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 import time
 import os
 import copy
-from efficient_densenet import  DenseNet
+from efficient_densenet import DenseNet
 
-plt.ion()   # interactive mode
+plt.ion()  # interactive mode
 
 # Data augmentation and normalization for training
 # Just normalization for validation
@@ -32,7 +32,6 @@ data_transforms = {
     ]),
 }
 
-
 data_dir = '/Users/peipengfei/Downloads/data'
 image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
                                           data_transforms[x])
@@ -44,6 +43,7 @@ dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
 class_names = image_datasets['train'].classes
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 
 ######################################################################
 # Visualize a few images
@@ -71,6 +71,7 @@ inputs, classes = next(iter(dataloaders['train']))
 out = torchvision.utils.make_grid(inputs)
 
 imshow(out, title=[class_names[x] for x in classes])
+
 
 ######################################################################
 # Training the model
@@ -102,7 +103,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
                 scheduler.step()
                 model.train()  # Set model to training mode
             else:
-                model.eval()   # Set model to evaluate mode
+                model.eval()  # Set model to evaluate mode
 
             running_loss = 0.0
             running_corrects = 0
@@ -177,7 +178,7 @@ def visualize_model(model, num_images=6):
 
             for j in range(inputs.size()[0]):
                 images_so_far += 1
-                ax = plt.subplot(num_images//2, 2, images_so_far)
+                ax = plt.subplot(num_images // 2, 2, images_so_far)
                 ax.axis('off')
                 ax.set_title('predicted: {}'.format(class_names[preds[j]]))
                 imshow(inputs.cpu().data[j])
@@ -196,6 +197,7 @@ def visualize_model(model, num_images=6):
 #
 # block_config = (6, 12, 24, 16)
 block_config = (6, 12, 32, 32)
+n_epochs = 600
 
 ## 加载模型
 model_ft = DenseNet(
@@ -207,20 +209,19 @@ model_ft = DenseNet(
     num_init_features=64,
 )
 print(model_ft)
-pretrained_dict = model_ft.state_dict()
 
 model_ft = model_ft.to(device)
 
 criterion = nn.CrossEntropyLoss()
 
 # Observe that all parameters are being optimized
-optimizer_ft = optim.SGD(model_ft.parameters(), lr=0.001, momentum=0.9)
+optimizer_ft = optim.SGD(model_ft.parameters(), lr=0.001, momentum=0.9, nesterov=True, weight_decay=0.001)
 
 # Decay LR by a factor of 0.1 every 7 epochs
-exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
+exp_lr_scheduler = lr_scheduler.MultiStepLR(optimizer_ft, milestones=[0.5 * n_epochs, 0.75 * n_epochs], gamma=0.1)
 
 model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
-                       num_epochs=300)
+                       num_epochs=n_epochs)
 
 visualize_model(model_ft)
 torch.save(model_ft, '/Users/peipengfei/Downloads/data/test.pkl')

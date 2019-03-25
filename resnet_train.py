@@ -34,7 +34,7 @@ data_transforms = {
     ]),
 }
 
-data_dir = '/Users/peipengfei/Downloads/data'
+data_dir = '/Users/peipengfei/Downloads/face'
 image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
                                           data_transforms[x])
                   for x in ['train', 'val']}
@@ -210,7 +210,7 @@ model_conv = train_model(model_conv, criterion, optimizer_conv,
 
 
 visualize_model(model_conv)
-torch.save(model_conv, '/Users/peipengfei/Downloads/data/gender.pkl')
+torch.save(model_conv, '/Users/peipengfei/Downloads/face/gender.pkl')
 
 
 plt.ioff()
