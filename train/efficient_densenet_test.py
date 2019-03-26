@@ -2,7 +2,7 @@ import os
 import time
 import torch
 from torchvision import datasets, transforms
-from efficient_densenet import DenseNet
+from models.efficient_densenet import DenseNet
 
 
 class AverageMeter(object):

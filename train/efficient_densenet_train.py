@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import time
 import os
 import copy
-from efficient_densenet import DenseNet
+from models.efficient_densenet import DenseNet
 
 plt.ion()  # interactive mode
 
@@ -36,7 +36,7 @@ data_dir = '/Users/peipengfei/Downloads/data'
 image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
                                           data_transforms[x])
                   for x in ['train', 'val']}
-dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=64,
+dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=256,
                                               shuffle=True, num_workers=4)
                for x in ['train', 'val']}
 dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
