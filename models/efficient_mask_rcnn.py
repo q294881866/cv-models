@@ -21,6 +21,9 @@ import torch.optim as optim
 import torch.utils.data
 from torch.autograd import Variable
 
+import torch.utils.checkpoint as cp
+from collections import OrderedDict
+
 from models import visualize, utils
 from nms.nms_wrapper import nms
 from roialign.roi_align.crop_and_resize import CropAndResizeFunction
@@ -234,13 +237,10 @@ class Bottleneck(nn.Module):
 
         return out
 
-class ResNet(nn.Module):
+class DenseNet(nn.Module):
 
-    def __init__(self, architecture, stage5=False):
-        super(ResNet, self).__init__()
-        assert architecture in ["resnet50", "resnet101"]
-        self.inplanes = 64
-        self.layers = [3, 4, {"resnet50": 6, "resnet101": 23}[architecture], 3]
+    def __init__(self, stage5=False):
+        super(DenseNet, self).__init__()
         self.block = Bottleneck
         self.stage5 = stage5
 
